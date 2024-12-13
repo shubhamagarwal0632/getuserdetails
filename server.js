@@ -56,6 +56,9 @@ app.post('/createUser', upload.none(), async (req, res) => {
     }
   }
 });
+app.get('/',(req, res)=>{
+  res.send('server is running on the site');
+})
 
 // Get all users
 app.get('/getdata', async (req, res) => {
