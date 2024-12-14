@@ -4,7 +4,7 @@ const multer = require('multer');
 const cors = require('cors');
 
 const app = express();
-
+app.use(express.json());
 app.use(cors({
   origin: '*', // Replace '*' with specific allowed origins if necessary
   methods: ['GET', 'POST']
@@ -69,11 +69,37 @@ app.get('/getdata', async (req, res) => {
 });
 
 // Search user by _id
-app.get('/getUserById', async (req, res) => {
-  const { _id } = req.query;
+// app.get('/getUserById', async (req, res) => {
+//   const { _id } = req.query;
+
+//   if (!_id) {
+//     return res.status(400).json({ message: 'User ID (_id) is required' });
+//   }
+
+//   try {
+//     const user = await User.findById(_id); // Find user by ID
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+//     res.status(200).json(user); // Return the user object if found
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error fetching user', error });
+//   }
+// });
+
+
+// Search user by _id
+app.post('/getUserById',upload.none(), async (req, res) => {
+  const { _id } = req.body;
+  console.log("=====================>", req.body);
 
   if (!_id) {
     return res.status(400).json({ message: 'User ID (_id) is required' });
+  }
+
+  // Check if _id is a valid ObjectId (use mongoose's ObjectId validation)
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(400).json({ message: 'Invalid user ID format' });
   }
 
   try {
@@ -86,7 +112,6 @@ app.get('/getUserById', async (req, res) => {
     res.status(500).json({ message: 'Error fetching user', error });
   }
 });
-
 
 // Start the server
 const PORT = process.env.PORT || 7000;
