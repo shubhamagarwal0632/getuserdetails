@@ -2,12 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const cors = require('cors');
-// app.use(cors());
-
-
 
 const app = express();
-
 
 app.use(cors({
   origin: '*', // Replace '*' with specific allowed origins if necessary
@@ -56,9 +52,11 @@ app.post('/createUser', upload.none(), async (req, res) => {
     }
   }
 });
-app.get('/',(req, res)=>{
-  res.send('server is running on the site');
-})
+
+// Test route
+app.get('/', (req, res) => {
+  res.send('Server is running on the site');
+});
 
 // Get all users
 app.get('/getdata', async (req, res) => {
@@ -69,6 +67,26 @@ app.get('/getdata', async (req, res) => {
     res.status(500).json({ message: 'Error fetching data', error });
   }
 });
+
+// Search user by _id
+app.get('/getUserById', async (req, res) => {
+  const { _id } = req.query;
+
+  if (!_id) {
+    return res.status(400).json({ message: 'User ID (_id) is required' });
+  }
+
+  try {
+    const user = await User.findById(_id); // Find user by ID
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user); // Return the user object if found
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user', error });
+  }
+});
+
 
 // Start the server
 const PORT = process.env.PORT || 7000;
